@@ -1,0 +1,38 @@
+Project : STM32F769I-DISCO_DefaultPins
+Purpose : Study STM32F769I-DISCO
+
+** Clock Config **
+no change
+
+** run debug **
+hang at MX_ETH_Init(), disable ETH
+hang at MX_LTDC_Init(), disable LTDC
+TIM6_DAC_IRQHandler called by MX_QUADSPI_Init() and break, disable QuadSPI
+TIM6_DAC_IRQHandler called by MX_RTC_Init() and break disable RTC
+hang at MX_SAI1_Init(), disable SAI1
+breaks at MX_SAI2_Init(), disable SAI2
+breaks at MX_SDMMC2_MMC_Init(), disable SDMMC2
+breaks at MX_SPDIFRX_Init(), disable SPDIF
+breaks at MX_SPI2_Init() disable SPI2
+TIM6_DAC_IRQHandler called by MX_TIM1_Init(), disable TIM1
+hang at MX_TIM3_Init(), disable TIM3
+hang at MX_TIM10_Init(), disable TIM10
+TIM6_DAC_IRQHandler called by MX_TIM11_Init() and hang, diable TIM11
+TIM6_DAC_IRQHandler called by MX_TIM12_Init() and hang, diable TIM12
+MX_UART5_Init() goes to some assembly language (FillZerobss & LoopFillZerobss), diable UART5
+HAL_GetTick called by MX_USART1_UART_Init() and hang, disable USART1
+TIM6_DAC_IRQHandler called by MX_USART6_UART_Init() and hang, disable USART6
+TIM6_DAC_IRQHandler called by MX_USB_OTG_HS_PCD_Init() and hang, disable USB OTG
+MX_WWDG_Init() goes to some assembly language (FillZerobss & LoopFillZerobss), diable WWDG
+Cannot debug RTOS, disable RTOS
+
+** LED1-2 **
+set GPIOJ5&13 as output
+
+** Solutions **
+disable IWDG will resolve most hang and breaks even MX_LTDC_Init() without modifications
+MX_LTDC_Init() = https://www.st.com/resource/en/application_note/dm00287601-dsi-host-on-stm32f469-479-stm32f7x8-x9-and-stm32l4r9-s9-mcus-stmicroelectronics.pdf
+except MX_SDMMC2_MMC_Init() & MX_WWDG_Init() & MX_ETH_Init()
+MX_ETH_Init() = should have RTOS and LWIP https://www.programmersought.com/article/3857201126/
+MX_SDMMC2_MMC_Init() error at SDMMC_GetCmdResp3 errorstate = 4, may need to disable if not needed because it is checking the SDCARD
+	check : https://www.youtube.com/watch?v=t5_SRIx-714 https://www.youtube.com/watch?v=kRhF44v2ezM https://www.youtube.com/watch?v=0NbBem8U80Y 
